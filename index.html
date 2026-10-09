@@ -436,7 +436,7 @@
           texto.length > 0 && cuerpo,
           vistaPrevia && el("a", { href: linkPagina(item), target: "_blank", rel: "noopener", className: "abrir", textContent: "Ver completo ↗" })
         ),
-      ];
+      ].filter(Boolean);
     }
 
     // ---------- Vista previa (se abre con #id en la URL) ----------
