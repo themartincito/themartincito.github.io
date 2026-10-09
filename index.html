@@ -227,13 +227,71 @@
       z-index: 1;
     }
     .cerrar:hover { color: var(--texto); }
-    .detalle-media img, .detalle-media video { width: 100%; display: block; max-height: 75vh; object-fit: contain; background: #111; }
+    .detalle-media img, .detalle-media video { width: 100%; display: block; max-height: 60vh; object-fit: contain; background: #111; }
     .detalle-media iframe { width: 100%; aspect-ratio: 16 / 9; border: 0; display: block; }
+    .detalle-media a { display: block; }
     .detalle-cuerpo { padding: 24px 32px 34px; text-align: center; }
-    .detalle-cuerpo h2 { margin: 0; font-size: 2rem; font-weight: 400; }
+    .detalle-cuerpo h2 { margin: 0; font-size: 2rem; font-weight: 400; line-height: 1.2; }
+    .detalle-cuerpo h2 a { color: inherit; text-decoration: none; }
+    .detalle-cuerpo h2 a:hover { text-decoration: underline; text-underline-offset: 4px; }
     .detalle-cuerpo time { color: var(--suave); font-size: 0.95rem; }
-    .detalle-cuerpo .cuerpo { text-align: left; max-width: 560px; margin: 18px auto 0; }
+    .detalle-cuerpo .cuerpo { display: block; color: inherit; text-decoration: none; text-align: left; max-width: 560px; margin: 18px auto 0; }
     .detalle-cuerpo p { margin: 0 0 14px; font-size: 1.2rem; }
+    /* en la vista previa el texto se corta y se desvanece */
+    .cuerpo.recortado {
+      max-height: 8.5em;
+      overflow: hidden;
+      -webkit-mask-image: linear-gradient(#000 55%, transparent);
+              mask-image: linear-gradient(#000 55%, transparent);
+    }
+    .abrir {
+      display: inline-block;
+      margin-top: 18px;
+      padding: 9px 18px;
+      border: 1px solid #d5d5d5;
+      color: #555;
+      text-decoration: none;
+      font-family: "Archivo", system-ui, sans-serif;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      transition: background .15s, color .15s;
+    }
+    .abrir:hover { background: #333; border-color: #333; color: #fff; }
+
+    /* ---------- Página propia de cada publicación (?p=id) ---------- */
+    .modo-pagina header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      padding: 16px;
+      border-bottom: 1px solid #eee;
+    }
+    .modo-pagina .banner, .modo-pagina .redes, .modo-pagina .filtros { display: none; }
+    .modo-pagina .perfil { width: 44px; height: 44px; margin: 0; border: none; }
+    .modo-pagina .nombre { margin: 0; font-size: 1.2rem; }
+    .modo-pagina .nombre a { color: inherit; text-decoration: none; }
+    .post { max-width: 900px; margin: 0 auto; padding: 32px 16px 20px; }
+    .post .detalle-media img, .post .detalle-media video { max-height: 80vh; }
+    .post .detalle-cuerpo { padding: 28px 0 0; }
+    .post .detalle-cuerpo h2 { font-size: clamp(1.8rem, 5vw, 2.6rem); }
+    .post .detalle-cuerpo .cuerpo { max-width: 640px; }
+    .post .detalle-cuerpo p { font-size: 1.25rem; }
+    .navegacion {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 24px 16px 60px;
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      border-top: 1px solid #eee;
+      font-size: 1.05rem;
+    }
+    .navegacion a { color: #555; text-decoration: none; max-width: 45%; }
+    .navegacion a:hover { color: #000; text-decoration: underline; text-underline-offset: 4px; }
+    .navegacion .siguiente { margin-left: auto; text-align: right; }
   </style>
 </head>
 <body>
@@ -344,26 +402,73 @@
       if (!visibles.length) grilla.append(el("p", { className: "vacio", textContent: "Todavía no hay nada acá." }));
     }
 
-    // ---------- Detalle (se abre con #id en la URL) ----------
-    function abrirDetalle(item) {
+    // ---------- Contenido de una publicación ----------
+    // Se usa en la vista previa (con links a la página propia) y en la página propia.
+    function linkPagina(item) { return "?p=" + encodeURIComponent(item.id); }
+
+    function armarPublicacion(item, { vistaPrevia, autoplay }) {
+      // en la vista previa, imagen, título y texto abren la página en otra pestaña
+      const envolver = (nodo, clase = "") => vistaPrevia
+        ? el("a", { href: linkPagina(item), target: "_blank", rel: "noopener", className: clase }, nodo)
+        : nodo;
+
       let media = null;
-      if (item.tipo === "imagen") media = el("img", { src: item.imagen, alt: item.titulo });
+      if (item.tipo === "imagen") media = envolver(el("img", { src: item.imagen, alt: item.titulo }));
       if (item.tipo === "video") {
+        // el video se reproduce ahí mismo; para abrir la página se usa el título o el botón
         media = item.youtube
-          ? el("iframe", { src: `https://www.youtube-nocookie.com/embed/${item.youtube}?autoplay=1`, allow: "autoplay; encrypted-media; fullscreen", allowFullscreen: true, title: item.titulo })
-          : el("video", { src: item.video, controls: true, autoplay: true, playsInline: true });
+          ? el("iframe", { src: `https://www.youtube-nocookie.com/embed/${item.youtube}${autoplay ? "?autoplay=1" : ""}`, allow: "autoplay; encrypted-media; fullscreen", allowFullscreen: true, title: item.titulo })
+          : el("video", { src: item.video, controls: true, autoplay, playsInline: true });
       }
 
-      detalle.replaceChildren(
+      const texto = parrafos(item.texto);
+      const cuerpo = vistaPrevia
+        ? el("a", { href: linkPagina(item), target: "_blank", rel: "noopener", className: "cuerpo recortado" }, ...texto)
+        : el("div", { className: "cuerpo" }, ...texto);
+
+      return [
         media && el("div", { className: "detalle-media" }, media),
         el("div", { className: "detalle-cuerpo" },
-          el("h2", { textContent: item.titulo }),
+          el("h2", {}, envolver(document.createTextNode(item.titulo))),
           item.fecha && el("time", { dateTime: item.fecha, textContent: formatearFecha(item.fecha) }),
-          el("div", { className: "cuerpo" }, ...parrafos(item.texto))
-        )
-      );
+          texto.length > 0 && cuerpo,
+          vistaPrevia && el("a", { href: linkPagina(item), target: "_blank", rel: "noopener", className: "abrir", textContent: "Ver completo ↗" })
+        ),
+      ];
+    }
+
+    // ---------- Vista previa (se abre con #id en la URL) ----------
+    function abrirDetalle(item) {
+      detalle.replaceChildren(...armarPublicacion(item, { vistaPrevia: true, autoplay: true }));
       if (!dialogo.open) dialogo.showModal();
       dialogo.scrollTop = 0;
+    }
+
+    // ---------- Página propia (?p=id) ----------
+    function pintarPagina(id) {
+      document.body.classList.add("modo-pagina");
+      const nombre = document.querySelector(".nombre");
+      nombre.replaceChildren(el("a", { href: "./", textContent: PERFIL.nombre }));
+
+      const i = CONTENIDO.findIndex(c => c.id === id);
+      const item = CONTENIDO[i];
+      const main = document.querySelector("main");
+
+      if (!item) {
+        main.replaceChildren(el("p", { className: "vacio" }, "Esta publicación no existe. ", el("a", { href: "./", textContent: "Volver al inicio" })));
+        return;
+      }
+
+      document.title = `${item.titulo} · ${PERFIL.nombre}`;
+      const anterior = CONTENIDO[i - 1];   // más nueva
+      const siguiente = CONTENIDO[i + 1];  // más vieja
+      main.replaceWith(
+        el("article", { className: "post" }, ...armarPublicacion(item, { vistaPrevia: false, autoplay: false })),
+        el("nav", { className: "navegacion" },
+          anterior && el("a", { href: linkPagina(anterior), className: "anterior", textContent: "← " + anterior.titulo }),
+          siguiente && el("a", { href: linkPagina(siguiente), className: "siguiente", textContent: siguiente.titulo + " →" })
+        )
+      );
     }
 
     function segunURL() {
@@ -387,6 +492,8 @@
     const datos = el("script", { src: "contenido.js?v=" + Date.now() });
     datos.onload = () => {
       pintarPerfil();
+      const pagina = new URLSearchParams(location.search).get("p");
+      if (pagina) return pintarPagina(pagina);
       pintarFiltros();
       pintarGrilla();
       segunURL();
