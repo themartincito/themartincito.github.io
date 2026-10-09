@@ -227,7 +227,9 @@
       z-index: 1;
     }
     .cerrar:hover { color: var(--texto); }
-    .detalle-media img, .detalle-media video { width: 100%; display: block; max-height: 60vh; object-fit: contain; background: #111; }
+    .detalle-media img, .detalle-media video { display: block; max-height: 60vh; }
+    .detalle-media img { max-width: 100%; margin: 0 auto; }
+    .detalle-media video { width: 100%; background: #111; }
     .detalle-media iframe { width: 100%; aspect-ratio: 16 / 9; border: 0; display: block; }
     .detalle-media a { display: block; }
     .detalle-cuerpo { padding: 24px 32px 34px; text-align: center; }
