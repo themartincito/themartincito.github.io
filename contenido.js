@@ -8,8 +8,8 @@ const PERFIL = {
   nombre: "Mi rincón",
   banner: "img/banner.png",
   foto: "img/perfil.jpg",
-  email: "tu@email.com",
-  linkedin: "https://www.linkedin.com/in/tu-usuario",
+  email: "sosamartinlautaro@gmail.com",
+  linkedin: "https://www.linkedin.com/in/martinlautarososa",
 };
 
 // ============================================================
