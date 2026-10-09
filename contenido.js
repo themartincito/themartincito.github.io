@@ -7,7 +7,7 @@
 const PERFIL = {
   nombre: "Mi rincón",
   banner: "https://picsum.photos/id/1056/1600/500",
-  foto: "https://picsum.photos/id/64/300/300",
+  foto: "img/perfil.jpg",
   email: "tu@email.com",
   linkedin: "https://www.linkedin.com/in/tu-usuario",
 };
