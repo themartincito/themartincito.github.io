@@ -264,7 +264,6 @@
     <div class="detalle-contenido"></div>
   </dialog>
 
-  <script src="contenido.js"></script>
   <script>
     const FILTROS = [
       { valor: "todos",  nombre: "Todo" },
@@ -383,10 +382,16 @@
 
     window.addEventListener("hashchange", segunURL);
 
-    pintarPerfil();
-    pintarFiltros();
-    pintarGrilla();
-    segunURL();
+    // contenido.js se pide siempre fresco (?v=hora) para que lo nuevo
+    // aparezca apenas se publica, sin esperar a que venza la caché
+    const datos = el("script", { src: "contenido.js?v=" + Date.now() });
+    datos.onload = () => {
+      pintarPerfil();
+      pintarFiltros();
+      pintarGrilla();
+      segunURL();
+    };
+    document.body.append(datos);
   </script>
 </body>
 </html>
