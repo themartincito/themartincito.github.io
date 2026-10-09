@@ -1,0 +1,387 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mi rincón</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@700;800&family=Rokkitt:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --header: #f7f7f7;
+      --fondo: #ffffff;
+      --texto: #333333;
+      --suave: #b5b5b5;
+      --texto-card: #f3efe6;   /* fondo de las cards de texto */
+      --gap: 32px;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--fondo);
+      color: var(--texto);
+      font-family: "Rokkitt", Georgia, serif;
+      font-weight: 300;
+      line-height: 1.5;
+    }
+
+    /* ---------- Header: banner + foto de perfil ---------- */
+    header { text-align: center; }
+    .banner {
+      height: 220px;
+      background: var(--header) center / cover no-repeat;
+    }
+    .perfil {
+      display: block;
+      width: 116px; height: 116px;
+      margin: -58px auto 0;          /* la mitad del círculo se monta sobre el banner */
+      position: relative;
+      border-radius: 50%;
+      border: 5px solid var(--fondo);
+      background: var(--header) center / cover no-repeat;
+    }
+    .nombre {
+      margin: 14px 16px 0;
+      font-family: "Archivo", system-ui, sans-serif;
+      font-weight: 800;
+      font-size: clamp(1.6rem, 6vw, 3.4rem);
+      line-height: 1.05;
+      letter-spacing: 0.01em;
+      text-transform: uppercase;
+      color: #444;
+    }
+    @media (max-width: 600px) {
+      .banner { height: 130px; }
+      .perfil { width: 84px; height: 84px; margin-top: -42px; border-width: 4px; }
+    }
+
+    /* íconos de redes */
+    .redes {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 16px;
+      margin-top: 14px;
+    }
+    .redes a, .redes span { display: grid; place-items: center; color: #9a9a9a; transition: color .15s; }
+    .redes a:hover { color: var(--texto); }
+    .redes svg { width: 22px; height: 22px; display: block; }
+    .redes .bandera svg { width: 26px; height: auto; border-radius: 2px; box-shadow: 0 0 0 1px rgba(0,0,0,.08); }
+
+    /* filtros chicos, tipo pestañas */
+    .filtros {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 6px 22px;
+      margin-top: 22px;
+    }
+    .filtros button {
+      border: none;
+      border-bottom: 2px solid transparent;
+      background: none;
+      padding: 2px 0 3px;
+      font-family: "Archivo", system-ui, sans-serif;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: #999;
+      cursor: pointer;
+      transition: color .15s;
+    }
+    .filtros button:hover { color: #555; }
+    .filtros button[aria-pressed="true"] { color: #555; border-bottom-color: #555; }
+
+    /* ---------- Grilla: siempre 3 de ancho ---------- */
+    main {
+      max-width: 700px;
+      margin: 0 auto;
+      padding: 30px 16px 60px;
+    }
+    .grilla {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 36px var(--gap);
+    }
+    @media (max-width: 600px) {
+      :root { --gap: 10px; }
+      .grilla { row-gap: 20px; }
+    }
+
+    .card {
+      display: block;
+      color: inherit;
+      text-decoration: none;
+    }
+    .marco {
+      position: relative;
+      aspect-ratio: 9 / 7;
+      overflow: hidden;
+      background: #eee;
+    }
+    .marco img, .marco video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform .3s ease, opacity .2s;
+    }
+    .card:hover .marco img,
+    .card:hover .marco video { transform: scale(1.04); opacity: .9; }
+    .card:focus-visible { outline: 2px solid var(--texto); outline-offset: 4px; }
+
+    .titulo {
+      margin: 10px 0 0;
+      text-align: center;
+      font-size: 1rem;
+      font-weight: 400;
+    }
+    @media (max-width: 600px) { .titulo { font-size: 0.8rem; margin-top: 6px; } }
+
+    /* card de texto: un bloque de color con el comienzo del texto */
+    .marco.texto {
+      background: var(--texto-card);
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      transition: background .2s;
+    }
+    .card:hover .marco.texto { background: #ebe5d7; }
+    .marco.texto p {
+      margin: 0;
+      font-size: 1.05rem;
+      overflow: hidden;
+      display: -webkit-box;
+      -webkit-line-clamp: 5;
+      -webkit-box-orient: vertical;
+    }
+    .marco.texto p::before { content: "“"; }
+    .marco.texto p::after { content: "”"; }
+    @media (max-width: 600px) {
+      .marco.texto { padding: 6px; }
+      .marco.texto p { font-size: 0.72rem; -webkit-line-clamp: 4; }
+    }
+
+    /* botón play en videos */
+    .play {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      pointer-events: none;
+    }
+    .play span {
+      width: 46px; height: 46px;
+      border-radius: 50%;
+      background: rgba(0,0,0,.5);
+      display: grid;
+      place-items: center;
+    }
+    .play span::before {
+      content: "";
+      border-left: 15px solid #fff;
+      border-top: 9px solid transparent;
+      border-bottom: 9px solid transparent;
+      margin-left: 4px;
+    }
+    @media (max-width: 600px) {
+      .play span { width: 28px; height: 28px; }
+      .play span::before { border-left-width: 9px; border-top-width: 6px; border-bottom-width: 6px; margin-left: 2px; }
+    }
+
+    .vacio { grid-column: 1 / -1; color: var(--suave); text-align: center; padding: 60px 0; font-size: 1.2rem; }
+
+    /* ---------- Vista de detalle ---------- */
+    dialog {
+      width: min(820px, calc(100vw - 32px));
+      max-height: calc(100vh - 32px);
+      padding: 0;
+      border: none;
+      background: var(--fondo);
+      color: var(--texto);
+      overflow: auto;
+    }
+    dialog::backdrop { background: rgba(255,255,255,.92); }
+    dialog { box-shadow: 0 10px 40px rgba(0,0,0,.15); }
+    .cerrar {
+      position: sticky;
+      top: 0;
+      float: right;
+      margin: 8px 10px;
+      border: none;
+      background: none;
+      color: var(--suave);
+      font-size: 2rem;
+      line-height: 1;
+      cursor: pointer;
+      z-index: 1;
+    }
+    .cerrar:hover { color: var(--texto); }
+    .detalle-media img, .detalle-media video { width: 100%; display: block; max-height: 75vh; object-fit: contain; background: #111; }
+    .detalle-media iframe { width: 100%; aspect-ratio: 16 / 9; border: 0; display: block; }
+    .detalle-cuerpo { padding: 24px 32px 34px; text-align: center; }
+    .detalle-cuerpo h2 { margin: 0; font-size: 2rem; font-weight: 400; }
+    .detalle-cuerpo time { color: var(--suave); font-size: 0.95rem; }
+    .detalle-cuerpo .cuerpo { text-align: left; max-width: 560px; margin: 18px auto 0; }
+    .detalle-cuerpo p { margin: 0 0 14px; font-size: 1.2rem; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="banner"></div>
+    <a class="perfil" href="./" aria-label="Inicio"></a>
+    <h1 class="nombre"></h1>
+    <div class="redes">
+      <a class="mail" aria-label="Mail" title="Mail">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3.5 6.5 8.5 6.5 8.5-6.5"/></svg>
+      </a>
+      <a class="linkedin" aria-label="LinkedIn" title="LinkedIn" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.45 20.45h-3.55v-5.57c0-1.33-.03-3.04-1.85-3.04-1.86 0-2.14 1.45-2.14 2.94v5.67H9.36V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0z"/></svg>
+      </a>
+      <span class="bandera" title="Argentina" aria-label="Argentina" role="img">
+        <svg viewBox="0 0 30 19"><rect width="30" height="19" fill="#74ACDF"/><rect y="6.33" width="30" height="6.34" fill="#fff"/><circle cx="15" cy="9.5" r="2.1" fill="#F6B40E" stroke="#85340A" stroke-width=".35"/></svg>
+      </span>
+    </div>
+    <nav class="filtros" aria-label="Filtrar por tipo"></nav>
+  </header>
+
+  <main>
+    <div class="grilla"></div>
+  </main>
+
+  <dialog id="detalle">
+    <button class="cerrar" aria-label="Cerrar">×</button>
+    <div class="detalle-contenido"></div>
+  </dialog>
+
+  <script src="contenido.js"></script>
+  <script>
+    const FILTROS = [
+      { valor: "todos",  nombre: "Todo" },
+      { valor: "texto",  nombre: "Textos" },
+      { valor: "imagen", nombre: "Imágenes" },
+      { valor: "video",  nombre: "Videos" },
+    ];
+
+    const grilla = document.querySelector(".grilla");
+    const nav = document.querySelector(".filtros");
+    const dialogo = document.getElementById("detalle");
+    const detalle = dialogo.querySelector(".detalle-contenido");
+    let filtroActual = "todos";
+
+    // Crea un elemento: el("p", { className: "x" }, "hola")
+    function el(tag, props = {}, ...hijos) {
+      const nodo = Object.assign(document.createElement(tag), props);
+      nodo.append(...hijos.filter(Boolean));
+      return nodo;
+    }
+
+    function formatearFecha(f) {
+      if (!f) return "";
+      return new Date(f + "T12:00:00").toLocaleDateString("es", { day: "numeric", month: "long", year: "numeric" });
+    }
+
+    function parrafos(texto) {
+      return (texto || "").split(/\n\s*\n/).filter(t => t.trim()).map(t => el("p", { innerText: t.trim() }));
+    }
+
+    // ---------- Perfil (datos en contenido.js) ----------
+    function pintarPerfil() {
+      document.title = PERFIL.nombre;
+      document.querySelector(".nombre").textContent = PERFIL.nombre;
+      document.querySelector(".banner").style.backgroundImage = `url("${PERFIL.banner}")`;
+      document.querySelector(".perfil").style.backgroundImage = `url("${PERFIL.foto}")`;
+
+      const mail = document.querySelector(".redes .mail");
+      if (PERFIL.email) mail.href = "mailto:" + PERFIL.email; else mail.remove();
+      const linkedin = document.querySelector(".redes .linkedin");
+      if (PERFIL.linkedin) linkedin.href = PERFIL.linkedin; else linkedin.remove();
+    }
+
+    // ---------- Filtros ----------
+    function pintarFiltros() {
+      nav.replaceChildren(...FILTROS.map(f => {
+        const boton = el("button", { type: "button", textContent: f.nombre });
+        boton.setAttribute("aria-pressed", f.valor === filtroActual);
+        boton.onclick = () => { filtroActual = f.valor; pintarFiltros(); pintarGrilla(); };
+        return boton;
+      }));
+    }
+
+    // ---------- Cards ----------
+    function crearCard(item) {
+      const marco = el("div", { className: "marco " + item.tipo });
+
+      if (item.tipo === "texto") {
+        marco.append(el("p", { textContent: (item.texto || "").replace(/\s+/g, " ").trim() }));
+      } else if (item.tipo === "imagen") {
+        marco.append(el("img", { src: item.imagen, alt: "", loading: "lazy" }));
+      } else if (item.tipo === "video") {
+        const preview = item.youtube
+          ? el("img", { src: `https://img.youtube.com/vi/${item.youtube}/mqdefault.jpg`, alt: "", loading: "lazy" })
+          : el("video", { src: item.video + "#t=0.5", muted: true, preload: "metadata", playsInline: true });
+        marco.append(preview, el("div", { className: "play" }, el("span")));
+      }
+
+      return el("a", { href: "#" + item.id, className: "card" },
+        marco,
+        el("h2", { className: "titulo", textContent: item.titulo })
+      );
+    }
+
+    function pintarGrilla() {
+      const visibles = CONTENIDO.filter(c => filtroActual === "todos" || c.tipo === filtroActual);
+      grilla.replaceChildren(...visibles.map(crearCard));
+      if (!visibles.length) grilla.append(el("p", { className: "vacio", textContent: "Todavía no hay nada acá." }));
+    }
+
+    // ---------- Detalle (se abre con #id en la URL) ----------
+    function abrirDetalle(item) {
+      let media = null;
+      if (item.tipo === "imagen") media = el("img", { src: item.imagen, alt: item.titulo });
+      if (item.tipo === "video") {
+        media = item.youtube
+          ? el("iframe", { src: `https://www.youtube-nocookie.com/embed/${item.youtube}?autoplay=1`, allow: "autoplay; encrypted-media; fullscreen", allowFullscreen: true, title: item.titulo })
+          : el("video", { src: item.video, controls: true, autoplay: true, playsInline: true });
+      }
+
+      detalle.replaceChildren(
+        media && el("div", { className: "detalle-media" }, media),
+        el("div", { className: "detalle-cuerpo" },
+          el("h2", { textContent: item.titulo }),
+          item.fecha && el("time", { dateTime: item.fecha, textContent: formatearFecha(item.fecha) }),
+          el("div", { className: "cuerpo" }, ...parrafos(item.texto))
+        )
+      );
+      if (!dialogo.open) dialogo.showModal();
+      dialogo.scrollTop = 0;
+    }
+
+    function segunURL() {
+      const item = CONTENIDO.find(c => c.id === decodeURIComponent(location.hash.slice(1)));
+      if (item) abrirDetalle(item);
+      else if (dialogo.open) dialogo.close();
+    }
+
+    function cerrar() { dialogo.close(); }
+    dialogo.querySelector(".cerrar").onclick = cerrar;
+    dialogo.addEventListener("click", e => { if (e.target === dialogo) cerrar(); }); // click afuera
+    dialogo.addEventListener("close", () => {
+      detalle.replaceChildren(); // corta el video si estaba sonando
+      if (location.hash) history.replaceState(null, "", location.pathname + location.search);
+    });
+
+    window.addEventListener("hashchange", segunURL);
+
+    pintarPerfil();
+    pintarFiltros();
+    pintarGrilla();
+    segunURL();
+  </script>
+</body>
+</html>
