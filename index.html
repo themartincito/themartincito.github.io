@@ -301,27 +301,11 @@ const roomAt = (x,z) => ROOMS.find(r => x>=r.x0 && x<=r.x1 && z>=r.z0 && z<=r.z1
 
 /* ============ renderer, lights ============ */
 const canvas = $('#c');
-// se averigua antes de crear el renderer: dibujando por software, el suavizado de bordes cuesta demasiado
-const placaDeVideo = (() => { try{ const gl = document.createElement('canvas').getContext('webgl'), e = gl.getExtension('WEBGL_debug_renderer_info'); return e ? gl.getParameter(e.UNMASKED_RENDERER_WEBGL) : ''; }catch(e){ return ''; } })();
-const porSoftware = /swiftshader|basic render|llvmpipe|software/i.test(placaDeVideo) || new URLSearchParams(location.search).has('liviano');
-const renderer = new THREE.WebGLRenderer({canvas, antialias:!porSoftware});
+const renderer = new THREE.WebGLRenderer({canvas, antialias:true});
 renderer.setPixelRatio(Math.min(window.devicePixelRatio||1, 2));
 renderer.outputEncoding = THREE.sRGBEncoding;
 renderer.shadowMap.enabled = true;
-renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-
-/* modo liviano: sin sombras y a menos resolución, para compus sin placa de video
-   (o con la aceleración por hardware del navegador apagada). Se activa solo si
-   el navegador dibuja por software, si la web va lenta, o con ?liviano en la dirección */
-let liviano = false;
-function activarLiviano(){
-  if(liviano) return; liviano = true;
-  renderer.shadowMap.enabled = false;
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio||1, 1) * .6);
-  scene.traverse(o => { if(o.material) o.material.needsUpdate = true; });
-  resize();
-}
-const scene = new THREE.Scene();
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;const scene = new THREE.Scene();
 const C = c => new THREE.Color(c).convertSRGBToLinear();
 const hemi = new THREE.HemisphereLight(C('#ffffff'), C('#a7b48c'), .55);
 const sun = new THREE.DirectionalLight(C('#fff1dc'), .9);
@@ -1038,13 +1022,10 @@ window.addEventListener('keydown', e => { if(e.key==='Escape' && openRoom) goRoo
 /* ============ loop ============ */
 const tv = new THREE.Vector3();
 function toScreen(x, y, z){ tv.set(x,y,z).project(camera); return { x:(tv.x+1)/2*canvas.clientWidth, y:(1-tv.y)/2*canvas.clientHeight, ok: tv.z < 1 }; }
-let last = performance.now(), aliveT = 0, medT = -1, medN = 0;
+let last = performance.now(), aliveT = 0;
 function frame(t){
   // tope alto: si la compu va lenta se ve entrecortado, pero no en cámara lenta
   const dt = Math.min(.25, (t-last)/1000); last = t;
-  // a los 2 segundos mide la velocidad; si va a menos de 30 cuadros por segundo, pasa a modo liviano
-  medT += dt; if(medT > 0) medN++;   // el primer segundo no cuenta (carga inicial)
-  if(!liviano && medT > 2){ if(medN/medT < 30) activarLiviano(); medT = -1e9; }
   if(fly){
     const k = ease(Math.min(1, (t - fly.t0)/fly.dur));
     camTarget.x = fly.from.x + (fly.to.x-fly.from.x)*k; camTarget.z = fly.from.z + (fly.to.z-fly.from.z)*k;
@@ -1057,7 +1038,7 @@ function frame(t){
     const f = n.flick ? .78 + .22*Math.sin(tsec*2.1 + n.flick)*Math.sin(tsec*.63) : 1;
     n.l.intensity = n.i * Math.max(n.day, themeK) * f;
     // una luz apagada igual se calcula en cada píxel: se saca de la escena hasta que haga falta
-    const prender = n.l.intensity > .001 && !(liviano && themeK < .5);
+    const prender = n.l.intensity > .001;
     if(n.l.visible !== prender) n.l.visible = prender;
   }
   if(themeK !== tk){ themeK = tk > themeK ? Math.min(1, themeK + dt/1.4) : Math.max(0, themeK - dt/1.4); applyTheme(); }
@@ -1088,7 +1069,6 @@ if(darkMQ.addEventListener) darkMQ.addEventListener('change', e => { if(!userThe
 $('#themeBtn').addEventListener('click', () => { userTheme = true; setNight(!night); });
 window.addEventListener('resize', resize);
 resize(); updateCam();
-if(porSoftware) activarLiviano();
 canvas.style.cursor = 'grab';
 const [start, startItem] = leerHash();
 if(start && ROOMS.some(r => r.id===start)){ showRoom(start, startItem); fly = null; const v = roomView(openRoom); camTarget.set(v.x,0,v.z); zoom = v.zoom; camera.zoom = zoom; camera.updateProjectionMatrix(); }
