@@ -1,34 +1,65 @@
 // ============================================================
 //  TU PERFIL
-//  Para usar tus fotos, ponelas en la carpeta img/ y cambiá las rutas,
-//  ej: banner: "img/banner.jpg", foto: "img/perfil.jpg"
+//  Para usar tus fotos, ponelas en la carpeta img/ y cambiá las rutas.
 // ============================================================
 
 const PERFIL = {
   nombre: "Mi rincón",
-  banner: "img/banner.png",
+  bio: "Acá guardo lo que hago, lo que pienso y lo que me gusta.",
   foto: "img/perfil.jpg",
   email: "sosamartinlautaro@gmail.com",
   linkedin: "https://www.linkedin.com/in/martinlautarososa",
+  pais: "Argentina",
 };
 
 // ============================================================
 //  TU CONTENIDO
-//  Para agregar una card, copiá un bloque { ... } y cambiale los datos.
+//  Para publicar algo, copiá un bloque { ... } y cambiale los datos.
+//  El primero de la lista es el que aparece primero.
+//
+//  Cada "tipo" va a una sala:
+//    "texto"  → Biblioteca 📚     "video" → Cine 🎬
+//    "imagen" → Galería 🖼️       "link"  → Café ☕
 //
 //  Campos:
-//    id      → nombre único, sin espacios (se usa en la URL: tusitio/#id)
-//    tipo    → "texto" | "imagen" | "video"
-//    titulo  → título de la card
-//    texto   → texto completo (dejá una línea en blanco entre párrafos)
-//    imagen  → (tipo imagen) ruta o URL de la imagen, ej: "img/foto.jpg"
-//    video   → (tipo video) ruta o URL de un .mp4, ej: "videos/clip.mp4"
-//    youtube → (tipo video) en lugar de "video", el ID de YouTube
-//              (lo que va después de watch?v= en el link)
+//    id      → nombre único, sin espacios ni tildes (se usa en la dirección)
+//    tipo    → "texto" | "imagen" | "video" | "link"
+//    titulo  → el título
+//    texto   → opcional, texto o descripción
+//              (dejá una línea en blanco con \n\n para separar párrafos)
 //    fecha   → opcional, "AAAA-MM-DD"
+//    temas   → opcional, etiquetas para filtrar dentro de la sala,
+//              ej: temas: ["viajes", "ideas"]
+//
+//    imagen  → (imagen) ruta o URL de la foto, ej: "img/foto.jpg"
+//              (en un link o video también sirve como miniatura)
+//    youtube → (video) el link de YouTube, entero o solo el código
+//    vimeo   → (video) el link de Vimeo
+//    video   → (video) un archivo .mp4, ej: "videos/clip.mp4"
+//    url     → (link) la dirección a la que lleva: Spotify, Instagram,
+//              una nota, un video de TikTok, lo que sea
 // ============================================================
 
 const CONTENIDO = [
+  {
+    id: "musica-para-trabajar",
+    tipo: "link",
+    titulo: "Música para concentrarse",
+    url: "https://open.spotify.com/",
+    texto: "Un link de ejemplo: puede ser una playlist, una nota, un post o cualquier cosa que quieras recomendar.",
+    temas: ["música"],
+    fecha: "2026-10-12",
+  },
+  {
+    id: "wikipedia-argentina",
+    tipo: "link",
+    titulo: "Argentina en Wikipedia",
+    url: "https://es.wikipedia.org/wiki/Argentina",
+    imagen: "https://picsum.photos/id/1036/800/450",
+    texto: "Otro link de ejemplo, con una imagen de miniatura.",
+    temas: ["lecturas"],
+    fecha: "2026-10-11",
+  },
   {
     id: "bienvenida",
     tipo: "texto",
@@ -42,6 +73,7 @@ const CONTENIDO = [
     titulo: "Montañas",
     imagen: "https://picsum.photos/id/1018/1200/1200",
     texto: "Una foto de un viaje.",
+    temas: ["viajes"],
     fecha: "2026-10-05",
   },
   {
@@ -64,7 +96,7 @@ const CONTENIDO = [
     tipo: "imagen",
     titulo: "Costa",
     imagen: "https://picsum.photos/id/1015/1600/800",
-    texto: "",
+    temas: ["viajes"],
     fecha: "2026-09-28",
   },
   {
@@ -80,6 +112,7 @@ const CONTENIDO = [
     tipo: "imagen",
     titulo: "Bosque",
     imagen: "https://picsum.photos/id/1043/1200/1200",
+    temas: ["naturaleza"],
     fecha: "2026-09-15",
   },
   {
