@@ -4,11 +4,12 @@
 // ============================================================
 
 const PERFIL = {
-  nombre: "Mi rincón",
+  nombre: "TheMartincito",
   bio: "Acá guardo lo que hago, lo que pienso y lo que me gusta.",
   foto: "img/perfil.jpg",
   email: "sosamartinlautaro@gmail.com",
   linkedin: "https://www.linkedin.com/in/martinlautarososa",
+  github: "https://github.com/themartincito",
   pais: "Argentina",
 };
 
@@ -63,7 +64,7 @@ const CONTENIDO = [
   {
     id: "bienvenida",
     tipo: "texto",
-    titulo: "Hola, este es mi rincón",
+    titulo: "Hola, bienvenido",
     texto: "Acá voy a ir guardando cosas que hago, que pienso y que me gustan.\n\nTextos, fotos, videos. Todo mezclado, como un cuaderno.",
     fecha: "2026-10-09",
   },
