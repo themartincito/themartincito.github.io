@@ -148,6 +148,9 @@ article.reader .media a{display:block}
 .media img{display:block;width:100%;height:auto}
 .media iframe,.media video{display:block;width:100%;aspect-ratio:16/9;border:0;background:#000}
 .acciones{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
+.barra-item{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px}
+.barra-item .back{margin-bottom:0}
+.barra-item .btn{padding:7px 12px;font-size:13px;white-space:nowrap}
 .btn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:12px;padding:9px 14px;font-weight:600;font-size:13.5px;text-decoration:none}
 .btn:hover{border-color:var(--brand)}
 .btn.principal{background:var(--brand);border-color:var(--brand);color:var(--brand-ink)}
@@ -949,6 +952,9 @@ function renderRoom(r, itemId){
 function renderItem(body, r, c){
   const back = iconoYTexto('button','back','<svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>', 'Todo en ' + r.name);
   back.addEventListener('click', () => goRoom(r.id));
+  // arriba de todo: volver a la sala y abrir la publicación en otra pestaña
+  const pag = el('a','btn','Ver en pestaña nueva ↗'); pag.href = linkPagina(c); pag.target = '_blank'; pag.rel = 'noopener';
+  const barra = el('div','barra-item'); barra.append(back, pag);
   const art = el('article','reader');
   const media = armarMedia(c);
   if(media){
@@ -960,12 +966,8 @@ function renderItem(body, r, c){
   art.appendChild(el('h3', null, c.titulo));
   if(c.fecha) art.appendChild(el('p','meta', formatearFecha(c.fecha)));
   art.append(...parrafos(c.texto));
-  const ac = el('div','acciones');
-  if(c.tipo==='link' && c.url) ac.appendChild(botonLink(c));
-  const pag = el('a','btn','Ver en pestaña nueva ↗'); pag.href = linkPagina(c); pag.target = '_blank'; pag.rel = 'noopener';
-  ac.appendChild(pag);
-  art.appendChild(ac);
-  body.append(back, art);
+  if(c.tipo==='link' && c.url){ const ac = el('div','acciones'); ac.appendChild(botonLink(c)); art.appendChild(ac); }
+  body.append(barra, art);
 }
 
 // recepción = contacto
